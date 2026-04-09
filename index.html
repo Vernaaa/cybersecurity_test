@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>資安工程師 歷屆試題特訓系統</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f3f4f6; }
+        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .option-btn { transition: all 0.2s ease-in-out; }
+        .option-btn:hover:not(:disabled) { transform: translateX(5px); border-color: #3b82f6; background-color: #eff6ff; }
+        .option-btn:disabled { cursor: not-allowed; }
+        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+        .pop-in { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        /* 隱藏滾動條但保留功能 */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="text-gray-800 h-screen flex flex-col">
+
+    <!-- 頂部導航 -->
+    <nav class="bg-slate-800 text-white shadow-lg shrink-0">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-shield-halved text-blue-400 text-2xl"></i>
+                <h1 class="font-bold text-xl tracking-wider">資安特訓中心</h1>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="switchTab('practice')" id="tab-practice" class="px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-500 transition font-medium">
+                    <i class="fa-solid fa-gamepad mr-1"></i> 實戰演練
+                </button>
+                <button onclick="switchTab('manage')" id="tab-manage" class="px-4 py-2 rounded-md bg-slate-700 hover:bg-slate-600 transition font-medium">
+                    <i class="fa-solid fa-database mr-1"></i> 題庫管理
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主內容區 -->
+    <main class="flex-grow overflow-auto p-4 md:p-8 flex justify-center items-start">
+        
+        <!-- 區塊 1：實戰演練 -->
+        <section id="practice-section" class="w-full max-w-3xl hidden">
+            <!-- 狀態列 -->
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                <div class="glass-panel rounded-xl p-4 shadow-sm text-center">
+                    <div class="text-sm text-gray-500 mb-1">總題庫數</div>
+                    <div class="text-2xl font-bold text-slate-700" id="stat-total">0</div>
+                </div>
+                <div class="glass-panel rounded-xl p-4 shadow-sm text-center">
+                    <div class="text-sm text-gray-500 mb-1">答對率</div>
+                    <div class="text-2xl font-bold text-blue-600" id="stat-accuracy">0%</div>
+                </div>
+                <div class="glass-panel rounded-xl p-4 shadow-sm text-center relative overflow-hidden">
+                    <div class="absolute -right-2 -bottom-2 opacity-10 text-orange-500 text-5xl"><i class="fa-solid fa-fire"></i></div>
+                    <div class="text-sm text-gray-500 mb-1">目前連勝</div>
+                    <div class="text-2xl font-bold text-orange-500" id="stat-streak">0</div>
+                </div>
+            </div>
+
+            <!-- 考題區 -->
+            <div class="glass-panel rounded-2xl shadow-lg p-6 md:p-8 relative">
+                <!-- 標籤 -->
+                <div class="inline-flex items-center gap-2 px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-semibold mb-4">
+                    <i class="fa-regular fa-calendar-check"></i>
+                    <span id="q-source">來源載入中...</span>
+                </div>
+
+                <!-- 題目 -->
+                <h2 class="text-xl md:text-2xl font-bold mb-6 leading-relaxed text-slate-800" id="q-text">
+                    準備好迎接挑戰了嗎？
+                </h2>
+
+                <!-- 選項 -->
+                <div class="flex flex-col gap-3" id="q-options">
+                    <!-- 動態產生 -->
+                </div>
+
+                <!-- 解答回饋區 -->
+                <div id="feedback-area" class="hidden mt-6 p-5 rounded-xl pop-in">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div id="feedback-icon" class="text-2xl"></div>
+                        <h3 id="feedback-title" class="text-lg font-bold"></h3>
+                    </div>
+                    <p id="feedback-explanation" class="text-gray-700 leading-relaxed mt-2"></p>
+                    
+                    <div class="mt-6 text-right">
+                        <button onclick="loadRandomQuestion()" class="bg-slate-800 hover:bg-slate-700 text-white px-6 py-2 rounded-lg font-medium shadow-md transition transform hover:scale-105">
+                            下一題 <i class="fa-solid fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 區塊 2：題庫管理 -->
+        <section id="manage-section" class="w-full max-w-3xl hidden">
+            <div class="glass-panel rounded-2xl shadow-lg p-6 md:p-8">
+                <h2 class="text-2xl font-bold mb-2 text-slate-800">題庫管理系統</h2>
+                <p class="text-gray-500 mb-6">目前的題庫皆儲存在您的瀏覽器本機中。您可以匯入自己整理的考題，或重置為預設題庫。</p>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- 匯入區 -->
+                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-blue-500 transition group bg-white">
+                        <i class="fa-solid fa-cloud-arrow-up text-4xl text-gray-400 group-hover:text-blue-500 mb-3"></i>
+                        <h3 class="font-bold text-lg mb-1">匯入專屬題庫</h3>
+                        <p class="text-sm text-gray-500 mb-4">支援 JSON 格式檔案</p>
+                        
+                        <input type="file" id="file-upload" accept=".json" class="hidden" onchange="handleFileUpload(event)">
+                        <label for="file-upload" class="cursor-pointer bg-blue-50 text-blue-600 px-4 py-2 rounded-md font-medium hover:bg-blue-100 transition inline-block">
+                            選擇檔案
+                        </label>
+                    </div>
+
+                    <!-- 下載與重置區 -->
+                    <div class="flex flex-col gap-3 justify-center">
+                        <button onclick="downloadTemplate()" class="flex items-center justify-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-3 rounded-xl hover:bg-gray-50 transition shadow-sm font-medium">
+                            <i class="fa-solid fa-download text-gray-500"></i> 下載題庫格式範本 (JSON)
+                        </button>
+                        <button onclick="downloadCurrentBank()" class="flex items-center justify-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-3 rounded-xl hover:bg-gray-50 transition shadow-sm font-medium">
+                            <i class="fa-solid fa-file-export text-gray-500"></i> 匯出目前所有題庫
+                        </button>
+                        <button onclick="resetBank()" class="flex items-center justify-center gap-2 bg-red-50 text-red-600 border border-red-200 px-4 py-3 rounded-xl hover:bg-red-100 transition shadow-sm font-medium mt-auto">
+                            <i class="fa-solid fa-rotate-right"></i> 恢復預設題庫並清除紀錄
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 題庫列表預覽 -->
+                <div class="mt-8">
+                    <h3 class="font-bold text-lg mb-3 border-b pb-2">目前題庫預覽 (<span id="preview-count">0</span> 題)</h3>
+                    <div id="bank-preview" class="max-h-64 overflow-y-auto no-scrollbar space-y-3 pr-2">
+                        <!-- 動態產生 -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 吐司提示訊息 (Toast) -->
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-xl z-50 flex items-center gap-3">
+        <i class="fa-solid fa-circle-info text-blue-400"></i>
+        <span id="toast-msg">訊息</span>
+    </div>
+
+    <script>
+        // --- 預設精選題庫 (從您上傳的 PDF 中摘錄) ---
+        const defaultQuestions = [
+            {
+                source: "108-2 資訊安全技術概論",
+                question: "下列何者「不」是私有網路位址 (Private IP)?",
+                options: ["10.0.0.1", "169.254.2.210", "172.31.5.128", "192.168.10.220"],
+                answerIndex: 1,
+                explanation: "169.254.X.X 是 APIPA (自動私人 IP 位址)，當設備無法從 DHCP 取得 IP 時自動配發，不屬於標準的 RFC 1918 Private IP 網段。"
+            },
+            {
+                source: "108-2 資訊安全管理概論",
+                question: "關於搜尋引擎攻擊 (Google-hacking)，主要在破壞資訊系統的何種特性？",
+                options: ["機密性 (Confidentiality)", "完整性 (Integrity)", "可用性 (Availability)", "責任性 (Accountability)"],
+                answerIndex: 0,
+                explanation: "Google-hacking 主要是利用搜尋引擎找出曝露在網際網路上的機敏檔案與設定檔，直接導致資料外洩，破壞「機密性」。"
+            },
+            {
+                source: "109-1 資訊安全管理概論",
+                question: "某攻擊者在大樓外面尋找可能含有密碼或機密訊息的廢棄紙張，此為下列何種攻擊法？",
+                options: ["社交工程 (Social Engineering)", "垃圾搜尋 (Dumpster Diving)", "中間人攻擊 (Man-in-the-middle Attack)", "後門攻擊 (Backdoor Attack)"],
+                answerIndex: 1,
+                explanation: "這就是實體資安常見的「垃圾搜尋 (Dumpster Diving)」。機密文件若未經碎紙機處理即丟棄，極易成為駭客收集情資的破口。"
+            },
+            {
+                source: "109-2 資訊安全技術概論",
+                question: "下列何種傳輸協定會在傳輸的過程中將傳輸資料加密保護？",
+                options: ["SSH", "HTTP", "FTP", "SMTP"],
+                answerIndex: 0,
+                explanation: "SSH (Secure Shell) 提供加密的遠端登入與指令執行；而 HTTP、FTP、SMTP 預設皆為明文傳輸（需加上 TLS/SSL 衍生為 HTTPS, FTPS, SMTPS 才具備加密）。"
+            },
+            {
+                source: "110-1 資訊安全管理概論",
+                question: "關於資訊安全「可用性 (Availability)」的定義，下列敘述何者正確？",
+                options: ["確保資訊的正確和完全性", "確保資訊在需要時可被存取和使用", "確保資訊在傳輸過程中已確認兩方的身分", "確保資訊不會被未經授權的實體取得"],
+                answerIndex: 1,
+                explanation: "可用性 (Availability) 的核心在於：當合法使用者需要時，系統與資料必須是可正常存取與提供服務的狀態。"
+            }
+        ];
+
+        // --- 系統狀態管理 ---
+        let appState = {
+            questions: [],
+            stats: { totalAnswered: 0, correct: 0, streak: 0, maxStreak: 0 }
+        };
+        let currentQuestion = null;
+
+        // --- 初始化與本機儲存 (LocalStorage) ---
+        function initApp() {
+            const savedState = localStorage.getItem('secExamState');
+            if (savedState) {
+                appState = JSON.parse(savedState);
+                // 確保如果有舊資料但題庫為空，恢復預設
+                if(appState.questions.length === 0) appState.questions = [...defaultQuestions];
+            } else {
+                appState.questions = [...defaultQuestions];
+            }
+            saveState();
+            updateStatsUI();
+            switchTab('practice');
+        }
+
+        function saveState() {
+            localStorage.setItem('secExamState', JSON.stringify(appState));
+            updateStatsUI();
+        }
+
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast');
+            const icon = toast.querySelector('i');
+            toast.querySelector('span').innerText = msg;
+            
+            if(isError) {
+                icon.className = 'fa-solid fa-circle-exclamation text-red-400';
+                toast.classList.replace('bg-gray-800', 'bg-red-900');
+            } else {
+                icon.className = 'fa-solid fa-circle-check text-green-400';
+                toast.classList.replace('bg-red-900', 'bg-gray-800');
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // --- UI 切換邏輯 ---
+        function switchTab(tab) {
+            document.getElementById('practice-section').classList.add('hidden');
+            document.getElementById('manage-section').classList.add('hidden');
+            
+            document.getElementById('tab-practice').classList.replace('bg-blue-600', 'bg-slate-700');
+            document.getElementById('tab-manage').classList.replace('bg-blue-600', 'bg-slate-700');
+
+            if (tab === 'practice') {
+                document.getElementById('practice-section').classList.remove('hidden');
+                document.getElementById('tab-practice').classList.replace('bg-slate-700', 'bg-blue-600');
+                if(!currentQuestion) loadRandomQuestion();
+            } else {
+                document.getElementById('manage-section').classList.remove('hidden');
+                document.getElementById('tab-manage').classList.replace('bg-slate-700', 'bg-blue-600');
+                renderBankPreview();
+            }
+        }
+
+        function updateStatsUI() {
+            document.getElementById('stat-total').innerText = appState.questions.length;
+            document.getElementById('stat-streak').innerText = appState.stats.streak;
+            
+            let acc = 0;
+            if (appState.stats.totalAnswered > 0) {
+                acc = Math.round((appState.stats.correct / appState.stats.totalAnswered) * 100);
+            }
+            document.getElementById('stat-accuracy').innerText = `${acc}%`;
+        }
+
+        // --- 核心：測驗邏輯 ---
+        function loadRandomQuestion() {
+            if (appState.questions.length === 0) {
+                alert("題庫中沒有題目了！請前往「題庫管理」新增題目。");
+                return;
+            }
+
+            // 重置介面
+            const feedbackArea = document.getElementById('feedback-area');
+            feedbackArea.classList.add('hidden');
+            feedbackArea.classList.remove('pop-in');
+            
+            const optionsContainer = document.getElementById('q-options');
+            optionsContainer.innerHTML = '';
+
+            // 抽題
+            const randomIndex = Math.floor(Math.random() * appState.questions.length);
+            currentQuestion = appState.questions[randomIndex];
+
+            // 渲染
+            document.getElementById('q-source').innerText = currentQuestion.source;
+            document.getElementById('q-text').innerText = currentQuestion.question;
+
+            currentQuestion.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn w-full text-left bg-white border-2 border-gray-200 p-4 rounded-xl font-medium text-gray-700';
+                btn.innerHTML = `<span class="inline-block w-8 text-gray-400 font-bold">${String.fromCharCode(65 + index)}.</span> ${opt}`;
+                btn.onclick = () => checkAnswer(index, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIndex, clickedBtn) {
+            const buttons = document.querySelectorAll('.option-btn');
+            buttons.forEach(btn => btn.disabled = true); // 鎖定
+
+            const isCorrect = (selectedIndex === currentQuestion.answerIndex);
+            appState.stats.totalAnswered++;
+
+            const feedbackArea = document.getElementById('feedback-area');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackIcon = document.getElementById('feedback-icon');
+            const feedbackExp = document.getElementById('feedback-explanation');
+
+            if (isCorrect) {
+                appState.stats.correct++;
+                appState.stats.streak++;
+                
+                clickedBtn.classList.replace('border-gray-200', 'border-green-500');
+                clickedBtn.classList.replace('bg-white', 'bg-green-50');
+                clickedBtn.classList.add('text-green-700');
+
+                feedbackArea.className = 'mt-6 p-5 rounded-xl pop-in bg-green-50 border border-green-200 block';
+                feedbackIcon.innerHTML = '<i class="fa-solid fa-circle-check text-green-500"></i>';
+                feedbackTitle.innerText = '防禦成功！答對了';
+                feedbackTitle.className = 'text-lg font-bold text-green-700';
+                
+            } else {
+                appState.stats.streak = 0; // 斷連勝
+                
+                clickedBtn.classList.replace('border-gray-200', 'border-red-500');
+                clickedBtn.classList.replace('bg-white', 'bg-red-50');
+                clickedBtn.classList.add('shake', 'text-red-700');
+
+                // 標示正確答案
+                const correctBtn = buttons[currentQuestion.answerIndex];
+                correctBtn.classList.replace('border-gray-200', 'border-green-500');
+                correctBtn.classList.add('border-2');
+
+                feedbackArea.className = 'mt-6 p-5 rounded-xl pop-in bg-red-50 border border-red-200 block';
+                feedbackIcon.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-red-500"></i>';
+                feedbackTitle.innerText = '系統遭駭！答錯了';
+                feedbackTitle.className = 'text-lg font-bold text-red-700';
+            }
+
+            feedbackExp.innerHTML = `<strong>解析：</strong>${currentQuestion.explanation}`;
+            saveState(); // 儲存統計數據
+        }
+
+        // --- 檔案管理與匯入匯出 ---
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    // 簡單驗證格式
+                    if(!Array.isArray(importedData) || !importedData[0].hasOwnProperty('question')) {
+                        throw new Error("格式不符");
+                    }
+
+                    appState.questions = [...appState.questions, ...importedData];
+                    saveState();
+                    renderBankPreview();
+                    showToast(`成功匯入 ${importedData.length} 題！`);
+                    
+                    event.target.value = ''; // 重置 input
+                } catch (error) {
+                    showToast('匯入失敗：檔案格式錯誤，請確定是標準 JSON。', true);
+                    console.error(error);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function downloadTemplate() {
+            const template = [
+                {
+                    "source": "111年度 - 資訊安全管理",
+                    "question": "這是一道範例題目，請將內容替換為真實考題。請問 1+1 等於？",
+                    "options": ["1", "2", "3", "4"],
+                    "answerIndex": 1,
+                    "explanation": "因為數學定理，所以是 2。"
+                }
+            ];
+            triggerDownload(template, "資安題庫_上傳範本.json");
+        }
+
+        function downloadCurrentBank() {
+            triggerDownload(appState.questions, "我的資安特訓題庫.json");
+        }
+
+        function triggerDownload(dataObj, filename) {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataObj, null, 4));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", filename);
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            showToast('檔案下載中...');
+        }
+
+        function resetBank() {
+            if(confirm("確定要恢復預設題庫嗎？這將會清除您匯入的所有題目以及答題紀錄。")) {
+                appState = {
+                    questions: [...defaultQuestions],
+                    stats: { totalAnswered: 0, correct: 0, streak: 0, maxStreak: 0 }
+                };
+                saveState();
+                renderBankPreview();
+                showToast('系統已重置完成');
+            }
+        }
+
+        function renderBankPreview() {
+            const container = document.getElementById('bank-preview');
+            document.getElementById('preview-count').innerText = appState.questions.length;
+            container.innerHTML = '';
+
+            // 僅預覽前 20 題避免畫面卡頓
+            const previewList = appState.questions.slice(0, 20);
+            
+            previewList.forEach((q, idx) => {
+                const div = document.createElement('div');
+                div.className = 'bg-white border border-gray-200 p-3 rounded-lg text-sm flex gap-3 items-start';
+                div.innerHTML = `
+                    <div class="bg-slate-100 text-slate-500 px-2 py-1 rounded text-xs font-bold shrink-0">#${idx+1}</div>
+                    <div>
+                        <div class="text-xs text-blue-500 font-semibold mb-1">${q.source}</div>
+                        <div class="text-gray-700 line-clamp-2">${q.question}</div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            if(appState.questions.length > 20) {
+                const more = document.createElement('div');
+                more.className = 'text-center text-gray-400 text-sm py-2';
+                more.innerText = `...還有 ${appState.questions.length - 20} 題未顯示`;
+                container.appendChild(more);
+            }
+        }
+
+        // 啟動應用程式
+        window.onload = initApp;
+    </script>
+</body>
+</html>
