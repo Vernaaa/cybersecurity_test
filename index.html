@@ -1141,6 +1141,32 @@
                 return;
             }
 
+            // --- 核心防呆：去重比對邏輯 ---
+            const inputQuestionText = document.getElementById('new-q-text').value.trim();
+            const isDuplicate = appState.questions.some((q, index) => {
+                // 如果是編輯模式，必須排除自己目前的索引值，否則編輯同一題會永遠被擋下
+                if (currentEditIndex !== -1 && index === currentEditIndex) {
+                    return false;
+                }
+                // 轉小寫並去除頭尾空白，進行精準比對
+                return q.question && q.question.trim().toLowerCase() === inputQuestionText.toLowerCase();
+            });
+
+            if (isDuplicate) {
+                showToast('⚠️ 攔截成功：題庫中已存在完全相同的題目！', true);
+                
+                // 觸發視覺震動回饋 (利用已建立的 shake 動畫)
+                const modalBox = document.querySelector('#add-modal > div');
+                if (modalBox) {
+                    modalBox.classList.remove('shake'); // 確保可以重複觸發
+                    void modalBox.offsetWidth; // 觸發 reflow 以重置動畫
+                    modalBox.classList.add('shake');
+                }
+                
+                return; // 終止後續儲存動作
+            }
+            // --- 結束去重比對 ---
+
             const newQ = {
                 source: document.getElementById('new-q-source').value,
                 question: document.getElementById('new-q-text').value,
@@ -1194,18 +1220,47 @@
                 try {
                     const importedData = JSON.parse(e.target.result);
                     
-                    // 簡單驗證格式
-                    if(!Array.isArray(importedData) || !importedData[0].hasOwnProperty('question')) {
+                    // 簡單驗證格式 (增加判斷空陣列的安全機制)
+                    if(!Array.isArray(importedData) || (importedData.length > 0 && !importedData[0].hasOwnProperty('question'))) {
                         throw new Error("格式不符");
                     }
 
-                    // 將新題目插入到現有題目前面
-                    appState.questions = [...importedData, ...appState.questions];
+                    // --- 核心更新：執行去重邏輯 ---
+                    // 1. 建立現有題庫的 Set (轉小寫且去頭尾空白，增加比對精準度)
+                    const existingQuestionSet = new Set(
+                        appState.questions.map(item => item.question ? item.question.trim().toLowerCase() : "")
+                    );
+
+                    const newItems = [];
+                    let duplicateCount = 0;
+
+                    // 2. 逐一檢查匯入的新題目
+                    importedData.forEach(newItem => {
+                        const qText = newItem.question ? newItem.question.trim().toLowerCase() : "";
+                        
+                        // 確保題目不為空且不存在於現有題庫中
+                        if (!existingQuestionSet.has(qText) && qText !== "") {
+                            newItems.push(newItem);
+                            // 將剛匯入的新題目也加入 Set 中，防範同一次匯入的檔案內本身就有重複題！
+                            existingQuestionSet.add(qText); 
+                        } else {
+                            duplicateCount++;
+                        }
+                    });
+
+                    // 3. 將過濾後的「純新題目」插入到現有題目前面
+                    appState.questions = [...newItems, ...appState.questions];
                     saveState();
                     renderBankPreview();
-                    showToast(`成功匯入 ${importedData.length} 題！`);
                     
-                    event.target.value = ''; // 重置 input
+                    // 4. 動態顯示匯入結果的 Toast 提示
+                    if (duplicateCount > 0) {
+                        showToast(`匯入完成！新增 ${newItems.length} 題，忽略 ${duplicateCount} 題重複。`);
+                    } else {
+                        showToast(`成功匯入 ${newItems.length} 題！無重複。`);
+                    }
+                    
+                    event.target.value = ''; // 重置 input 確保同檔案可再次觸發 onChange
                 } catch (error) {
                     showToast('匯入失敗：檔案格式錯誤，請確定是標準 JSON。', true);
                     console.error(error);
