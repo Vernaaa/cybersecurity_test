@@ -30,7 +30,7 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="text-gray-800 h-screen flex flex-col">
+<body class="text-gray-800 h-screen flex flex-col relative">
 
     <!-- 頂部導航 -->
     <nav class="bg-slate-800 text-white shadow-lg shrink-0">
@@ -111,13 +111,13 @@
         <section id="manage-section" class="w-full max-w-3xl hidden">
             <div class="glass-panel rounded-2xl shadow-lg p-6 md:p-8">
                 <h2 class="text-2xl font-bold mb-2 text-slate-800">題庫管理系統</h2>
-                <p class="text-gray-500 mb-6">目前的題庫皆儲存在您的瀏覽器本機中。您可以匯入自己整理的考題，或重置為預設題庫。</p>
+                <p class="text-gray-500 mb-6">目前的題庫皆儲存在您的瀏覽器本機中。您可以自由手動新增、刪除單一題目，或批次匯入/匯出。</p>
 
                 <div class="grid md:grid-cols-2 gap-6">
                     <!-- 匯入區 -->
                     <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-blue-500 transition group bg-white">
                         <i class="fa-solid fa-cloud-arrow-up text-4xl text-gray-400 group-hover:text-blue-500 mb-3"></i>
-                        <h3 class="font-bold text-lg mb-1">匯入專屬題庫</h3>
+                        <h3 class="font-bold text-lg mb-1">批次匯入題庫</h3>
                         <p class="text-sm text-gray-500 mb-4">支援 JSON 格式檔案</p>
                         
                         <input type="file" id="file-upload" accept=".json" class="hidden" onchange="handleFileUpload(event)">
@@ -128,22 +128,28 @@
 
                     <!-- 下載與重置區 -->
                     <div class="flex flex-col gap-3 justify-center">
-                        <button onclick="downloadTemplate()" class="flex items-center justify-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-3 rounded-xl hover:bg-gray-50 transition shadow-sm font-medium">
-                            <i class="fa-solid fa-download text-gray-500"></i> 下載題庫格式範本 (JSON)
+                        <button onclick="showAddModal()" class="flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-3 rounded-xl hover:bg-blue-500 transition shadow-md font-bold">
+                            <i class="fa-solid fa-plus"></i> 手動新增單筆考題
                         </button>
-                        <button onclick="downloadCurrentBank()" class="flex items-center justify-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-3 rounded-xl hover:bg-gray-50 transition shadow-sm font-medium">
-                            <i class="fa-solid fa-file-export text-gray-500"></i> 匯出目前所有題庫
+                        <button onclick="downloadCurrentBank()" class="flex items-center justify-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-50 transition shadow-sm font-medium">
+                            <i class="fa-solid fa-file-export text-gray-500"></i> 匯出目前所有題庫 (備份)
                         </button>
-                        <button onclick="resetBank()" class="flex items-center justify-center gap-2 bg-red-50 text-red-600 border border-red-200 px-4 py-3 rounded-xl hover:bg-red-100 transition shadow-sm font-medium mt-auto">
-                            <i class="fa-solid fa-rotate-right"></i> 恢復預設題庫並清除紀錄
+                        <button onclick="downloadTemplate()" class="flex items-center justify-center gap-2 bg-white border border-gray-300 text-gray-500 px-4 py-2 rounded-xl hover:bg-gray-50 transition shadow-sm font-medium text-sm">
+                            <i class="fa-solid fa-download text-gray-400"></i> 下載上傳範本
+                        </button>
+                        <button onclick="resetBank()" class="flex items-center justify-center gap-2 bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-xl hover:bg-red-100 transition shadow-sm font-medium text-sm mt-2">
+                            <i class="fa-solid fa-rotate-right"></i> 恢復系統預設題庫
                         </button>
                     </div>
                 </div>
 
                 <!-- 題庫列表預覽 -->
                 <div class="mt-8">
-                    <h3 class="font-bold text-lg mb-3 border-b pb-2">目前題庫預覽 (<span id="preview-count">0</span> 題)</h3>
-                    <div id="bank-preview" class="max-h-64 overflow-y-auto no-scrollbar space-y-3 pr-2">
+                    <h3 class="font-bold text-lg mb-3 border-b pb-2 flex justify-between items-center">
+                        <span>目前題庫總覽 (<span id="preview-count">0</span> 題)</span>
+                        <span class="text-sm font-normal text-gray-400">最新新增的題目會顯示在最上方</span>
+                    </h3>
+                    <div id="bank-preview" class="max-h-96 overflow-y-auto space-y-3 pr-2">
                         <!-- 動態產生 -->
                     </div>
                 </div>
@@ -151,6 +157,63 @@
         </section>
 
     </main>
+
+    <!-- 新增題目 Modal 表單 -->
+    <div id="add-modal" class="fixed inset-0 bg-black/60 hidden justify-center items-center z-50 p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[95vh] flex flex-col pop-in">
+            <div class="p-5 border-b flex justify-between items-center bg-slate-50 rounded-t-2xl">
+                <h3 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-pen-to-square text-blue-500 mr-2"></i>手動新增考題</h3>
+                <button onclick="closeAddModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+            </div>
+            <div class="p-5 overflow-y-auto flex-grow custom-scrollbar">
+                <form id="add-q-form" class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">來源 / 標籤</label>
+                        <input type="text" id="new-q-source" required class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="例如：109年度 - 資訊安全管理概論">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">題目內容</label>
+                        <textarea id="new-q-text" required rows="3" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="請輸入完整題目..."></textarea>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">選項 A</label>
+                            <input type="text" id="new-q-optA" required class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">選項 B</label>
+                            <input type="text" id="new-q-optB" required class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">選項 C</label>
+                            <input type="text" id="new-q-optC" required class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">選項 D</label>
+                            <input type="text" id="new-q-optD" required class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">正確解答</label>
+                        <select id="new-q-ans" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none bg-white font-bold text-blue-700">
+                            <option value="0">選項 A 為正確解答</option>
+                            <option value="1">選項 B 為正確解答</option>
+                            <option value="2">選項 C 為正確解答</option>
+                            <option value="3">選項 D 為正確解答</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">專業解析 (選填)</label>
+                        <textarea id="new-q-exp" rows="2" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="請輸入答案的解釋或觀念補充..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="p-4 border-t bg-white flex justify-end gap-3 rounded-b-2xl">
+                <button onclick="closeAddModal()" class="px-6 py-2 rounded-lg font-bold text-gray-600 bg-white border hover:bg-gray-50 transition">取消</button>
+                <button onclick="saveNewQuestion()" class="px-6 py-2 rounded-lg font-bold text-white bg-blue-600 hover:bg-blue-700 transition shadow-md">儲存並新增</button>
+            </div>
+        </div>
+    </div>
 
     <!-- 吐司提示訊息 (Toast) -->
     <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-xl z-50 flex items-center gap-3">
@@ -772,9 +835,15 @@
 
         // --- 初始化與本機儲存 (LocalStorage) ---
         function initApp() {
-            // 強制載入最新的 defaultQuestions 內容
-            appState.questions = [...defaultQuestions];
+            // 嘗試載入已儲存的題庫，若無則使用預設題庫
+            const savedQuestions = localStorage.getItem('secExamQuestions');
+            if (savedQuestions) {
+                appState.questions = JSON.parse(savedQuestions);
+            } else {
+                appState.questions = [...defaultQuestions];
+            }
             
+            // 載入統計數據
             const savedStats = localStorage.getItem('secExamStats');
             if (savedStats) {
                 appState.stats = JSON.parse(savedStats);
@@ -785,8 +854,9 @@
         }
 
         function saveState() {
-            // 只儲存統計數據，不儲存題庫，這樣更新 HTML 的 defaultQuestions 時才會生效
+            // 儲存統計數據與題庫陣列
             localStorage.setItem('secExamStats', JSON.stringify(appState.stats));
+            localStorage.setItem('secExamQuestions', JSON.stringify(appState.questions));
             updateStatsUI();
         }
 
@@ -842,7 +912,10 @@
         // --- 核心：測驗邏輯 ---
         function loadRandomQuestion() {
             if (appState.questions.length === 0) {
-                alert("題庫中沒有題目了！請前往「題庫管理」新增題目。");
+                document.getElementById('q-source').innerText = "系統提示";
+                document.getElementById('q-text').innerText = "目前題庫中沒有任何題目了！請前往「題庫管理」新增題目。";
+                document.getElementById('q-options').innerHTML = '';
+                document.getElementById('feedback-area').classList.add('hidden');
                 return;
             }
 
@@ -859,7 +932,7 @@
             currentQuestion = appState.questions[randomIndex];
 
             // 渲染
-            document.getElementById('q-source').innerText = currentQuestion.source;
+            document.getElementById('q-source').innerText = currentQuestion.source || "自訂題目";
             document.getElementById('q-text').innerText = currentQuestion.question;
 
             currentQuestion.options.forEach((opt, index) => {
@@ -914,8 +987,57 @@
                 feedbackTitle.className = 'text-lg font-bold text-red-700';
             }
 
-            feedbackExp.innerHTML = `<strong>解析：</strong>${currentQuestion.explanation}`;
+            feedbackExp.innerHTML = `<strong>解析：</strong>${currentQuestion.explanation || "本題無提供解析。"}`;
             saveState(); // 儲存統計數據
+        }
+
+        // --- 手動新增題目邏輯 ---
+        function showAddModal() {
+            document.getElementById('add-modal').classList.remove('hidden');
+            document.getElementById('add-modal').classList.add('flex');
+        }
+
+        function closeAddModal() {
+            document.getElementById('add-modal').classList.add('hidden');
+            document.getElementById('add-modal').classList.remove('flex');
+        }
+
+        function saveNewQuestion() {
+            const form = document.getElementById('add-q-form');
+            if(!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const newQ = {
+                source: document.getElementById('new-q-source').value,
+                question: document.getElementById('new-q-text').value,
+                options: [
+                    document.getElementById('new-q-optA').value,
+                    document.getElementById('new-q-optB').value,
+                    document.getElementById('new-q-optC').value,
+                    document.getElementById('new-q-optD').value
+                ],
+                answerIndex: parseInt(document.getElementById('new-q-ans').value),
+                explanation: document.getElementById('new-q-exp').value
+            };
+
+            // 加到陣列最前面
+            appState.questions.unshift(newQ);
+            saveState();
+            renderBankPreview();
+            closeAddModal();
+            showToast('考題新增成功！');
+            form.reset();
+        }
+
+        function deleteQuestion(index) {
+            if (confirm("這項操作無法復原，您確定要刪除這道題目嗎？")) {
+                appState.questions.splice(index, 1);
+                saveState();
+                renderBankPreview();
+                showToast("考題已成功刪除");
+            }
         }
 
         // --- 檔案管理與匯入匯出 ---
@@ -933,7 +1055,8 @@
                         throw new Error("格式不符");
                     }
 
-                    appState.questions = [...appState.questions, ...importedData];
+                    // 將新題目插入到現有題目前面
+                    appState.questions = [...importedData, ...appState.questions];
                     saveState();
                     renderBankPreview();
                     showToast(`成功匯入 ${importedData.length} 題！`);
@@ -951,10 +1074,10 @@
             const template = [
                 {
                     "source": "111年度 - 資訊安全管理",
-                    "question": "這是一道範例題目，請將內容替換為真實考題。請問 1+1 等於？",
-                    "options": ["1", "2", "3", "4"],
+                    "question": "這是一道範例題目，請將內容替換為真實考題。請問下列何者屬於非對稱式加密演算法？",
+                    "options": ["AES", "RSA", "DES", "MD5"],
                     "answerIndex": 1,
-                    "explanation": "因為數學定理，所以是 2。"
+                    "explanation": "RSA 屬於非對稱式加密。AES 和 DES 為對稱式，MD5 為雜湊演算法。"
                 }
             ];
             triggerDownload(template, "資安題庫_上傳範本.json");
@@ -976,7 +1099,7 @@
         }
 
         function resetBank() {
-            if(confirm("確定要恢復預設題庫嗎？這將會清除您匯入的所有題目以及答題紀錄。")) {
+            if(confirm("警告：這將會清除您匯入及新增的所有自訂題目，並重置答題紀錄！確定要恢復原廠預設題庫嗎？")) {
                 appState = {
                     questions: [...defaultQuestions],
                     stats: { totalAnswered: 0, correct: 0, streak: 0, maxStreak: 0 }
@@ -984,6 +1107,11 @@
                 saveState();
                 renderBankPreview();
                 showToast('系統已重置完成');
+                
+                // 如果目前在實戰頁面，重新抽題
+                if(!document.getElementById('practice-section').classList.contains('hidden')){
+                    loadRandomQuestion();
+                }
             }
         }
 
@@ -992,28 +1120,22 @@
             document.getElementById('preview-count').innerText = appState.questions.length;
             container.innerHTML = '';
 
-            // 僅預覽前 20 題避免畫面卡頓
-            const previewList = appState.questions.slice(0, 20);
-            
-            previewList.forEach((q, idx) => {
+            // 渲染所有題目供管理 (若資料過多可考慮分頁，但目前設計為全部列出方便刪除)
+            appState.questions.forEach((q, idx) => {
                 const div = document.createElement('div');
-                div.className = 'bg-white border border-gray-200 p-3 rounded-lg text-sm flex gap-3 items-start';
+                div.className = 'bg-white border border-gray-200 p-3 rounded-lg text-sm flex gap-3 items-start hover:border-blue-300 transition group';
                 div.innerHTML = `
-                    <div class="bg-slate-100 text-slate-500 px-2 py-1 rounded text-xs font-bold shrink-0">#${idx+1}</div>
-                    <div>
-                        <div class="text-xs text-blue-500 font-semibold mb-1">${q.source}</div>
-                        <div class="text-gray-700 line-clamp-2">${q.question}</div>
+                    <div class="bg-slate-100 text-slate-500 px-2 py-1 rounded text-xs font-bold shrink-0 mt-1">#${idx+1}</div>
+                    <div class="flex-grow">
+                        <div class="text-xs text-blue-500 font-semibold mb-1">${q.source || "自訂題目"}</div>
+                        <div class="text-gray-700">${q.question}</div>
                     </div>
+                    <button onclick="deleteQuestion(${idx})" class="text-red-400 hover:text-red-600 hover:bg-red-50 shrink-0 p-2 rounded-md transition opacity-0 group-hover:opacity-100 focus:opacity-100" title="刪除此題">
+                        <i class="fa-solid fa-trash-can text-lg"></i>
+                    </button>
                 `;
                 container.appendChild(div);
             });
-
-            if(appState.questions.length > 20) {
-                const more = document.createElement('div');
-                more.className = 'text-center text-gray-400 text-sm py-2';
-                more.innerText = `...還有 ${appState.questions.length - 20} 題未顯示`;
-                container.appendChild(more);
-            }
         }
 
         // 啟動應用程式
