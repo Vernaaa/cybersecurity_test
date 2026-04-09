@@ -159,42 +159,607 @@
     </div>
 
     <script>
-        // --- 預設精選題庫 (從您上傳的 PDF 中摘錄) ---
+        // --- 預設精選題庫 (包含108年技術概論完整50題) ---
         const defaultQuestions = [
             {
-                source: "108-2 資訊安全技術概論",
-                question: "下列何者「不」是私有網路位址 (Private IP)?",
-                options: ["10.0.0.1", "169.254.2.210", "172.31.5.128", "192.168.10.220"],
-                answerIndex: 1,
-                explanation: "169.254.X.X 是 APIPA (自動私人 IP 位址)，當設備無法從 DHCP 取得 IP 時自動配發，不屬於標準的 RFC 1918 Private IP 網段。"
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "下列何者「不」是私有網路位址(Private IP)?",
+                "options": [
+                    "10.0.0.1",
+                    "169.254.2.210",
+                    "172.31.5.128",
+                    "192.168.10.220"
+                ],
+                "answerIndex": 1,
+                "explanation": "169.254.X.X 屬於 APIPA（自動私人 IP 位址）。當設備設定為自動取得 IP 卻找不到 DHCP 伺服器時，系統便會自動配發此網段的 IP，它並不屬於 RFC 1918 所定義的三大標準私有 IP 網段。"
             },
             {
-                source: "108-2 資訊安全管理概論",
-                question: "關於搜尋引擎攻擊 (Google-hacking)，主要在破壞資訊系統的何種特性？",
-                options: ["機密性 (Confidentiality)", "完整性 (Integrity)", "可用性 (Availability)", "責任性 (Accountability)"],
-                answerIndex: 0,
-                explanation: "Google-hacking 主要是利用搜尋引擎找出曝露在網際網路上的機敏檔案與設定檔，直接導致資料外洩，破壞「機密性」。"
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "關於網路設備與OSI參考模式,下列敘述何者正確?",
+                "options": [
+                    "中繼器(Repeater)是在資料鏈結層(Data Link Layer)",
+                    "橋接器(Bridge)是在實體層(Physical Layer)",
+                    "閘道器(Gateway)是在網路層(Network Layer)",
+                    "路由器(Router)是在網路層(Network Layer)"
+                ],
+                "answerIndex": 3,
+                "explanation": "路由器(Router)運作於 OSI 模型的第三層（網路層 Network Layer），負責依據 IP 位址進行封包的路由選擇。中繼器在第一層，橋接器在第二層，閘道器通常運作於第四層以上。"
             },
             {
-                source: "109-1 資訊安全管理概論",
-                question: "某攻擊者在大樓外面尋找可能含有密碼或機密訊息的廢棄紙張，此為下列何種攻擊法？",
-                options: ["社交工程 (Social Engineering)", "垃圾搜尋 (Dumpster Diving)", "中間人攻擊 (Man-in-the-middle Attack)", "後門攻擊 (Backdoor Attack)"],
-                answerIndex: 1,
-                explanation: "這就是實體資安常見的「垃圾搜尋 (Dumpster Diving)」。機密文件若未經碎紙機處理即丟棄，極易成為駭客收集情資的破口。"
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "設定密碼時需注意許多原則規範以免太容易被攻擊者猜出，下列何者是較好的密碼設定？",
+                "options": [
+                    "QAZWSXEDCRT",
+                    "56781344",
+                    "qWA$s&1!aBap",
+                    "helloworld"
+                ],
+                "answerIndex": 2,
+                "explanation": "高強度密碼應包含大小寫字母、數字及特殊符號，且具備一定長度。選項(C)符合此複雜度原則，而其他選項則過於規律（鍵盤相鄰按鍵）、僅含數字，或是常見的字典單字。"
             },
             {
-                source: "109-2 資訊安全技術概論",
-                question: "下列何種傳輸協定會在傳輸的過程中將傳輸資料加密保護？",
-                options: ["SSH", "HTTP", "FTP", "SMTP"],
-                answerIndex: 0,
-                explanation: "SSH (Secure Shell) 提供加密的遠端登入與指令執行；而 HTTP、FTP、SMTP 預設皆為明文傳輸（需加上 TLS/SSL 衍生為 HTTPS, FTPS, SMTPS 才具備加密）。"
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "下列何種應用層的通訊協定，在傳輸的過程中並未對內容進行加密處理？",
+                "options": [
+                    "SSH",
+                    "TLS",
+                    "SMTP",
+                    "HTTPS"
+                ],
+                "answerIndex": 2,
+                "explanation": "SMTP (Simple Mail Transfer Protocol) 預設為明文傳輸。若要加密需加上 TLS 成為 SMTPS。而 SSH, TLS, HTTPS 本身皆已具備強大的加密機制。"
             },
             {
-                source: "110-1 資訊安全管理概論",
-                question: "關於資訊安全「可用性 (Availability)」的定義，下列敘述何者正確？",
-                options: ["確保資訊的正確和完全性", "確保資訊在需要時可被存取和使用", "確保資訊在傳輸過程中已確認兩方的身分", "確保資訊不會被未經授權的實體取得"],
-                answerIndex: 1,
-                explanation: "可用性 (Availability) 的核心在於：當合法使用者需要時，系統與資料必須是可正常存取與提供服務的狀態。"
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "下列何者「不」是微軟網路芳鄰常見使用Port？",
+                "options": [
+                    "137",
+                    "139",
+                    "123",
+                    "445"
+                ],
+                "answerIndex": 2,
+                "explanation": "Port 123 是 NTP (網路校時協定) 所使用。而 137、139 (NetBIOS) 以及 445 (SMB) 皆為微軟網路芳鄰進行檔案或印表機分享時常開的連接埠，也是駭客常掃描的目標。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "下列何種防火牆，因僅針對封包標頭進行檢查，並無針對封包資料進行檢查，可能難以抵禦大量封包的分散式攻擊？",
+                "options": [
+                    "狀態檢查防火牆（Stateful Inspection Firewall）",
+                    "應用代理閘道防火牆（Application-proxy Firewall）",
+                    "封包過濾防火牆（Packet-filtering Firewall）",
+                    "混合型防火牆（Hybrid Firewall）"
+                ],
+                "answerIndex": 2,
+                "explanation": "封包過濾防火牆 (Packet-filtering Firewall) 屬於較早期的技術，運作於網路層，僅檢查 IP 和 Port 等標頭資訊，不檢視酬載 (Payload)，因此難以防禦針對應用層或偽裝正常的 DDoS 攻擊。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "死亡之Ping（Ping of Death, PoD）是針對開放式系統互聯模型（OSI Model）的何層攻擊？",
+                "options": [
+                    "Layer 2資料連接層（Data-Link Layer）",
+                    "Layer 3網路層（Network Layer）",
+                    "Layer 4傳送層（Transport Layer）",
+                    "Layer 7應用層（Application Layer）"
+                ],
+                "answerIndex": 1,
+                "explanation": "Ping 使用的是 ICMP 協定，該協定運作於 OSI 模型的第三層 (網路層)。死亡之 Ping 是透過發送超過 IP 協定規定最大長度的異常封包，導致目標系統記憶體溢出或當機。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "TCP/IP通訊協定中，負責提供網路服務給應用程式的是何層的工作？",
+                "options": [
+                    "應用層",
+                    "傳輸層",
+                    "網路層",
+                    "會議層"
+                ],
+                "answerIndex": 0,
+                "explanation": "在 TCP/IP 模型中，應用層 (Application Layer) 位居最高層，直接面對使用者並為其應用程式 (如網頁瀏覽器、電子郵件客戶端) 提供各種網路服務。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "為了電子郵件的通訊安全，可以使用下列何者？",
+                "options": [
+                    "TLS",
+                    "SNMP",
+                    "SMTP",
+                    "SLIP"
+                ],
+                "answerIndex": 0,
+                "explanation": "TLS (傳輸層安全性協定) 可用於加密應用層的資料傳輸。在電子郵件通訊中，常將 TLS 疊加於 SMTP、POP3 或 IMAP 之上，確保信件在傳輸過程不被竊聽。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "TCP三向交握（Three-way Handshake）的順序為下列何者？",
+                "options": [
+                    "SYN，SYN/ACK，ACK",
+                    "SYN，ACK，SYN",
+                    "SYN，SYN，SYN",
+                    "ACK，SYN，SYN"
+                ],
+                "answerIndex": 0,
+                "explanation": "TCP 建立連線的三個步驟：1. Client 發送 SYN 請求連線；2. Server 回傳 SYN/ACK 同意連線並發出自己的請求；3. Client 回傳 ACK 確認，連線正式建立。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "使用IPSec傳輸模式（Transport Mode）的主要保護特性為何？",
+                "options": [
+                    "只對封包標頭加密保護",
+                    "只對資料本身（Payload）加密保護",
+                    "整個封包（標頭和資料本身）均被加密保護",
+                    "必須根據IKE參數決定加密範圍"
+                ],
+                "answerIndex": 1,
+                "explanation": "IPSec 的傳輸模式 (Transport Mode) 僅對資料本身 (Payload) 進行加密，保留原本的 IP 標頭不變；若使用通道模式 (Tunnel Mode)，則會將整個原始封包加密並套上新的 IP 標頭。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "關於資料在傳輸層使用TLS協定進行資料的保護，下列敘述何者「不」正確？",
+                "options": [
+                    "透過加密而能確保資訊的私密性",
+                    "藉由加密來確保訊息的完整性",
+                    "經由數位授權提供資料的真實性",
+                    "經由公開金鑰進行加解密的過程"
+                ],
+                "answerIndex": 3,
+                "explanation": "TLS 在初始交握階段會使用公開金鑰 (非對稱加密) 來安全地交換金鑰。但為了傳輸效能，後續實際大量資料的加解密，是使用交握後產生的「對稱式金鑰」來進行，而非全程使用公開金鑰。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "若要僅有收件者能開啟，並確認內容未遭簒改的信件，下列敘述何者正確？",
+                "options": [
+                    "信件以雜湊（Hash）演算後，以寄件者的私密金鑰（Private Key）加密後寄出",
+                    "信件以雜湊（Hash）演算後，以收件者的私密金鑰（Private Key）加密後寄出",
+                    "信件以雜湊（Hash）演算後，以收件者的公開金鑰（Public Key）加密後寄出",
+                    "使用收件者的公開金鑰（Public Key）加密信件"
+                ],
+                "answerIndex": 2,
+                "explanation": "這題考驗的是「機密性」。若要確保「僅有收件者能看」，必須使用「收件者的公開金鑰」來加密，因為這世上只有收件者手上的那把私鑰能解開。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "若CPU執行時間切割為一個固定的時間，分配給每一個程式，當固定之時間一到，隨即讓出CPU的時間給下一個程式使用，此為下列何種作業系統？",
+                "options": [
+                    "分時系統",
+                    "多工系統",
+                    "即時系統",
+                    "多處理機系統"
+                ],
+                "answerIndex": 0,
+                "explanation": "分時系統 (Time-Sharing System) 透過將 CPU 時間切分為極短的片段 (Time Slice)，快速輪流服務多個程式，讓每個使用者感覺像是在獨佔系統資源。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "當某一應用程式向作業系統要求記憶體之空間，作業系統亦為此應用程式指定一塊區域，當使用完畢後，此應用程式並沒有通知作業系統，故此區域無法釋放做其他用途，此現象稱為？",
+                "options": [
+                    "記憶體暫存（Memory Register）",
+                    "記憶體注入（Memory Injection）",
+                    "記憶體洩漏（Memory Leaks）",
+                    "記憶體映像（Memory Mapping）"
+                ],
+                "answerIndex": 2,
+                "explanation": "記憶體洩漏 (Memory Leak) 是一種常見的軟體缺陷。程式佔用了記憶體卻「忘記」歸還，積少成多之下，最終將耗盡系統資源導致當機。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "若要從Linux系統中dump出密碼的Hash值，需存取下列何種檔案？",
+                "options": [
+                    "/etc/shadow",
+                    "/etc/issue",
+                    "/etc/hosts",
+                    "/etc/passwd"
+                ],
+                "answerIndex": 0,
+                "explanation": "基於安全考量，現代 Linux 已將密碼的 Hash 值從所有人都可讀取的 /etc/passwd 移出，獨立存放在權限極嚴格（通常僅限 root 讀取）的 /etc/shadow 檔案中。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "於Linux作業系統中，SELinux（Security-Enhanced Linux）為何種存取控制模型的實作？",
+                "options": [
+                    "DAC（Discretionary Access Control）",
+                    "MAC（Mandatory Access Control）",
+                    "RBAC（Role-Base Access Control）",
+                    "NonDAC（Non-Discretionary Access Control）"
+                ],
+                "answerIndex": 1,
+                "explanation": "SELinux 是美國國安局開發的強制存取控制 (MAC) 架構。有別於傳統由檔案擁有者自行決定權限的 DAC，MAC 是由系統管理員制定全域的安全策略，擁有更高的防禦層級。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "提權（Privilege Escalation）的用意為下列何者？",
+                "options": [
+                    "利用exploit提升使用者權限至root",
+                    "隱藏入侵軌跡",
+                    "刪除使用者帳號",
+                    "登入遠端桌面"
+                ],
+                "answerIndex": 0,
+                "explanation": "駭客入侵初期通常只拿到一般權限（如 www-data），為了完全控制系統、植入後門或刪除日誌，必須透過系統漏洞「提權」來獲取最高管理員權限 (root)。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "下列程式碼片段存在安全瑕疵，請問下列何者可達成SQL Injection攻擊？ String query = \"SELECT * FROM accounts WHERE custID='\" + request.getParameter(\"id\") + \"'\";",
+                "options": [
+                    "id = 0 OR 1",
+                    "custID = 1 or 1",
+                    "'1'='1'",
+                    "' or '1'='1"
+                ],
+                "answerIndex": 3,
+                "explanation": "若輸入選項(D)，SQL語句將組合成 `WHERE custID='' or '1'='1'`。由於 `'1'='1'` 是永遠為真的邏輯條件，這將導致資料庫無視前方條件，直接吐出所有資料。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "在連線網頁時，Client端與Server端中間的資料傳輸常會使用下列何種協議方式進行保護傳輸？",
+                "options": [
+                    "TLS",
+                    "AES",
+                    "RSA",
+                    "DES"
+                ],
+                "answerIndex": 0,
+                "explanation": "網頁的安全連線 (HTTPS) 是建立在 TLS (傳輸層安全性協定) 之上。AES、RSA 等則是 TLS 在建立安全通道時所呼叫的特定密碼學演算法。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "攻擊者針對程式設計缺陷，在某個資料超過了處理程式限制的範圍時，破壞程式執行、趁著中斷之際取得程式或是系統的控制權，進而入侵系統，竊取資料，甚至造成主機當機的現象，是下列何種攻擊手法？",
+                "options": [
+                    "緩衝區溢位（Buffer Overflow）",
+                    "SQL注入（SQL Injection）",
+                    "重送攻擊（Replay Attack）",
+                    "阻斷式攻擊（Denial of Service Attack）"
+                ],
+                "answerIndex": 0,
+                "explanation": "當輸入的資料長度超過程式預留的記憶體緩衝區大小時，多出來的資料就會「溢位」並覆寫掉相鄰的記憶體空間，駭客常利用此漏洞將惡意程式碼注入執行。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "關於密碼潑灑（Password Spraying），下列敘述何者正確？",
+                "options": [
+                    "用單一弱密碼，嘗試登入所有帳號",
+                    "蒐集常見的密碼，放入字典，嘗試登入系統",
+                    "利用外洩的帳號與密碼組合，嘗試登入系統",
+                    "使用所有可能密碼組合，嘗試登入系統"
+                ],
+                "answerIndex": 0,
+                "explanation": "為避免針對單一帳號連續猜測導致帳號被鎖定，密碼潑灑採取「水平掃描」策略：使用幾個最常見的弱密碼（如 123456），去大範圍嘗試登入系統內所有的帳號。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "某程式設計師撰寫密碼雜湊系統時，對於 password1 與 password2 皆加入了相同的字串「07C98BFE4CF67B0BFE2643B5B22E2D7D」進行雜湊。請問此程式設計師犯了何種錯誤？",
+                "options": [
+                    "雜湊值太短",
+                    "重覆使用Salt",
+                    "Salt太短",
+                    "雜湊演算法有漏洞"
+                ],
+                "answerIndex": 1,
+                "explanation": "加鹽 (Salt) 的核心精神在於「隨機性」。如果所有使用者的密碼都加上相同的一串固定的鹽值 (Hardcoded Salt)，就等同於沒加，駭客依然可以用針對該鹽值客製化的彩虹表破解。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "下列何者為防禦跨站請求偽造（Cross-Site Request Forgery, CSRF）攻擊的最佳方式？",
+                "options": [
+                    "使用驗證碼（CAPTCHA）",
+                    "輸入參數黑名單過濾",
+                    "輸入參數白名單過濾",
+                    "輸入參數長度過濾"
+                ],
+                "answerIndex": 0,
+                "explanation": "CSRF 是利用瀏覽器會自動帶入 Cookie 的特性，在背景偽造發送請求。除了使用 Anti-CSRF Token，強制要求使用者輸入驗證碼 (CAPTCHA) 增加人機互動，也是阻斷自動化偽造請求的有效手段。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "下列何者「不」是不安全程式碼所會造成的問題？",
+                "options": [
+                    "注入（Injection）攻擊",
+                    "跨站指令碼（Cross-Site Scripting, XSS）攻擊",
+                    "跨站請求偽造（Cross-Site Request Forgery, CSRF）",
+                    "網路釣魚（Phishing）"
+                ],
+                "answerIndex": 3,
+                "explanation": "前三者皆肇因於開發者未對輸入與輸出進行妥善驗證與處理；而網路釣魚 (Phishing) 則是屬於「社交工程」，主要利用人性弱點（如偽造銀行登入信件）來騙取機敏資訊，與目標網站的程式碼無關。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "關於單元測試（Unit Test）與功能測試（Function Test），下列敘述何者較「不」正確？",
+                "options": [
+                    "單元測試主要測試單一單元是否運作正常",
+                    "功能測試主要測試是否符合功能需求",
+                    "單元測試與功能測試應由軟體品保工程師進行",
+                    "功能測試的複雜度較單元測試為高"
+                ],
+                "answerIndex": 2,
+                "explanation": "單元測試（Unit Test）通常由軟體開發工程師（Developer）在開發階段自行編寫與執行，以確保個別程式碼模組邏輯正確；而功能測試（Function Test）或系統測試才主要交由獨立的軟體品保工程師（QA）來客觀執行。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "關於網站常見的跨站指令碼（Cross-site scripting, XSS）攻擊，下列何者「不」能透過此一攻擊達成？",
+                "options": [
+                    "盜取使用者的網站帳號密碼",
+                    "進行網站掛馬",
+                    "取得Cookie資訊",
+                    "取得任意資料庫內DATA"
+                ],
+                "answerIndex": 3,
+                "explanation": "XSS 主要是針對「客戶端瀏覽器」的攻擊，用來竊取前端的 Cookie 或進行網頁釣魚。若要「取得資料庫內的 DATA」，通常需要針對「伺服器端後端」的攻擊手法，例如 SQL Injection（資料隱碼攻擊）。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "惡意程式分析常使用下列何種方法防禦進階的攻擊？",
+                "options": [
+                    "動態分析",
+                    "靜態分析",
+                    "沙盒分析",
+                    "原始碼分析"
+                ],
+                "answerIndex": 2,
+                "explanation": "面對進階且會躲避防毒軟體特徵碼掃描的惡意程式，資安人員常使用「沙盒（Sandbox）分析」。在一個隔離、受控的虛擬環境中實際執行可疑檔案，藉由觀察其行為（如網路連線、竄改登錄檔）來判斷是否為惡意軟體。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "駭客可以透過網路記錄（Cookies）竊取個人資料，請問原因為下列何者？",
+                "options": [
+                    "因為Cookies是一種惡意的間諜程式",
+                    "因為Cookies可能會記錄使用者瀏覽網頁的資訊、帳號與密碼",
+                    "因為Cookies是一種新的網路技術",
+                    "因為Cookies是一種新的病毒"
+                ],
+                "answerIndex": 1,
+                "explanation": "Cookies 本身是中性的純文字檔，用於記錄使用者的登入狀態或偏好設定。但若網站設計不良，將未加密的機敏資訊（如 Session ID、帳號密碼）存於 Cookie 中，駭客便可透過 XSS 等手法將其竊取。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "下列何種漏洞通常無法被漏洞掃描工具偵測與辨識出來？",
+                "options": [
+                    "區域漏洞（Local Vulnerabilities）",
+                    "稀疏漏洞（Sparse Vulnerabilities）",
+                    "沙盒漏洞（Sandbox Vulnerabilities）",
+                    "零時差漏洞（Zero-Day Vulnerabilities）"
+                ],
+                "answerIndex": 3,
+                "explanation": "零時差漏洞（Zero-Day）是指軟體開發商尚未發現、或發現了但還沒釋出修補程式（Patch）的漏洞。既然連原廠都還不知道，傳統依賴「已知特徵碼」比對的弱點掃描工具自然無法偵測到它。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "下列何者是資安人員常用來找出作業系統漏洞的工具？",
+                "options": [
+                    "ping",
+                    "scapy",
+                    "OpenVAS",
+                    "MBSD"
+                ],
+                "answerIndex": 2,
+                "explanation": "OpenVAS (Open Vulnerability Assessment System) 是一套廣泛使用的開源弱點掃描架構，可協助發掘系統潛在的安全性漏洞。Ping 是測量網路連通性，Scapy 則是強大的封包操作與偽造工具。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "關於勒索軟體（Ransomware），下列敘述何者「不」正確？",
+                "options": [
+                    "所有防毒軟體可防禦已知/未知勒索軟體，避免遭受加密攻擊",
+                    "部分勒索軟體已有工具可進行解密",
+                    "勒索軟體常使用主流加密演算法（如：RSA與AES），將使用者文件、系統檔案加密後要求支付贖金",
+                    "比特幣因去中心化與匿名等特性而無法有效追蹤流向，常為勒索軟體要求支付使用"
+                ],
+                "answerIndex": 0,
+                "explanation": "這世上沒有任何一款防毒軟體能保證 100% 攔截所有「未知（Zero-day）」或經過變種的勒索軟體。最佳的防禦策略永遠是落實「離線備份（3-2-1 備份原則）」與提高人員的資安警覺性。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "差異備份、增量備份、完整備份，此三種備份方式的備份速度，由快到慢依次為下列何者？",
+                "options": [
+                    "完整備份、差異備份、增量備份",
+                    "差異備份、增量備份、完整備份",
+                    "增量備份、差異備份、完整備份",
+                    "完整備份、增量備份、差異備份"
+                ],
+                "answerIndex": 2,
+                "explanation": "備份資料量決定了速度。「增量備份」只備份上次任何備份後異動的資料，資料量最小，速度最快；「差異備份」備份自上次「完整備份」後異動的資料，速度居中；「完整備份」則是全盤複製，速度最慢。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "公司內部使用DVD光碟儲存機密資料，下列何種資料清除方式可以較安全地將資料銷毀，防止資料洩漏？",
+                "options": [
+                    "使用Delete命令",
+                    "消磁",
+                    "安全抹除（ATA Secure Erase）",
+                    "實體破壞"
+                ],
+                "answerIndex": 3,
+                "explanation": "DVD 光碟屬於光學儲存媒體。Delete 只是刪除檔案索引；消磁僅對磁性媒體（如傳統硬碟 HDD 或磁帶）有效；ATA Secure Erase 適用於硬碟/SSD。對於光碟片，使用碎紙機或剪刀進行「實體破壞」是最徹底的做法。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "關於密碼儲存與保護，下列敘述何者為最佳實務？",
+                "options": [
+                    "密碼明文（Plaintext）儲存即可，無需進行加密",
+                    "密碼應使用對稱式加密（Symmetric encryption）儲存",
+                    "密碼應使用非對稱式加密（Asymmetric encryption）儲存",
+                    "密碼加鹽後（Password salting），再儲存其雜湊與鹽值"
+                ],
+                "answerIndex": 3,
+                "explanation": "密碼絕對不可明文或使用可逆的加密法儲存（萬一金鑰外洩，所有密碼將同時曝光）。業界標準實務是將密碼加入隨機字串「加鹽（Salt）」後，再進行不可逆的「雜湊（Hash）」運算，藉此有效抵禦彩虹表攻擊。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "若公司營運系統伺服器內有三顆硬碟作RAID 5，並且備份機制中規劃每週五 23:00進行完整備份...本週一11:00時伺服器其中一顆硬碟發生故障，請問應採取下列何種處理方式？",
+                "options": [
+                    "將上週五的Full Backup磁帶回存，再將六、日的增量備份磁帶回存",
+                    "將上週五的Full Backup磁帶回存，再將週日的備份磁帶回存",
+                    "更換有問題的硬碟",
+                    "更換有問題的硬碟，並將上週五的Full Backup磁帶回存，再將六、日的增量備份磁帶回存"
+                ],
+                "answerIndex": 2,
+                "explanation": "RAID 5 具備容許「一顆」硬碟損壞的容錯能力。當僅有一顆故障時，系統依然能透過其餘硬碟的同位元（Parity）檢查碼正常運作提供服務。此時根本無需動用磁帶回存資料，直接抽換故障硬碟，系統便會自動進行資料重建。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "關於SAN（Storage Area Network）及NAS（Network Attached Storage），下列敘述何者「不」正確？",
+                "options": [
+                    "SAN及NAS都是提供伺服器與儲存設備間高速連結",
+                    "SAN透過光纖通道或IP網路與伺服器作連結",
+                    "NAS可透過IP網路與伺服器連結",
+                    "NAS應其應用彈性較大故價格較SAN昂貴"
+                ],
+                "answerIndex": 3,
+                "explanation": "SAN 屬於區塊層級（Block-level）的專屬儲存網路架構，通常使用光纖通道，提供極高效能與低延遲，因此建置成本與價格通常「遠高於」透過一般 IP 網路傳輸檔案層級（File-level）的 NAS。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "關於系統日誌的管理與分析，下列敘述何者較「不」正確？",
+                "options": [
+                    "應選擇適當的整合式Log管理工具，並且測試確認是否能快速查詢分析",
+                    "可以考慮將日誌加密儲存，以避免資料遭到竄改",
+                    "日誌的資料量不大，所以不需考慮傳輸時頻寬",
+                    "最好能夠定義哪些事件是需要優先監控和分析的"
+                ],
+                "answerIndex": 2,
+                "explanation": "在中大型企業中，各種伺服器、防火牆與網路設備每天產生的日誌（Log）可以輕易達到數十 GB 甚至 TB 等級。在進行集中化收集與備份時，網路頻寬的消耗絕對是必須審慎評估的重點。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "某組織之系統開發人員於開發系統時，均各自將其所開發之不同系統依據其個人喜好設定日誌檔結構，請問若系統管理人員欲針對這些系統...的日誌檔進行管理，則該將這些日誌檔如何處理最為合適？",
+                "options": [
+                    "正規化",
+                    "分散化",
+                    "依設計原意不變",
+                    "集中化"
+                ],
+                "answerIndex": 0,
+                "explanation": "當來源日誌的格式、欄位定義（如時間戳記格式、IP 位置欄位名稱）各行其是時，必須透過「正規化（Normalization）」程序，將不同格式的 Log 轉換為統一的標準結構，否則後續 SIEM 系統將無法進行有效的關聯分析。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "在Web服務器日誌中，若看到使用操縱變量的攻擊者使用“dot-dot slash（../）”排列和其他變化...請問此為下列何種攻擊手法？",
+                "options": [
+                    "目錄遊走（Directory Traversal）",
+                    "SQL注入（SQL Injection）",
+                    "跨站指令碼攻擊（Cross-Site Scripting, XSS）",
+                    "文件注入（Content Injection）"
+                ],
+                "answerIndex": 0,
+                "explanation": "攻擊者利用 `../`（返回上一層目錄）的特殊字元，試圖跳脫網站伺服器限制的根目錄，藉此存取系統底層的機敏檔案（如 Linux 的 `/etc/passwd`），此手法即稱為目錄遊走或路徑遍歷攻擊。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "關於留存日誌之系統、設備等的時間同步（Clock Synchronization），下列敘述何者最正確？",
+                "options": [
+                    "無需進行時間同步",
+                    "系統才需進行時間同步，網路設備不需要",
+                    "可設定所有系統、設備，先向同一主機進行校正，再由該主機對外時間源進行校正",
+                    "不同系統、設備，應分別向外部不同時間源進行時間校正，以分散風險"
+                ],
+                "answerIndex": 2,
+                "explanation": "資安事件調查極度仰賴準確的「時間軸」。最佳架構是在內部建置獨立的 NTP 伺服器，讓所有內部設備都與其對時，該台伺服器再統一向外部國家標準時間源校正。這樣既確保內部時間絕對一致，又不會過度消耗對外頻寬。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "一般在進行資安日誌分析時，若想分析Linux系統中使用者的登入歷史紀錄，應蒐集下列何種檔案？",
+                "options": [
+                    "/var/log/messages",
+                    "/etc/login.defs",
+                    "/var/log/secure",
+                    "/var/log/dmesg"
+                ],
+                "answerIndex": 2,
+                "explanation": "在基於 RHEL/CentOS 的 Linux 系統中，與安全認證授權相關的日誌（包含 SSH 成功或失敗的登入紀錄）預設存放在 `/var/log/secure`（Debian/Ubuntu 系統則為 `/var/log/auth.log`）。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "下列何者「不」是常見的雲端運算的服務型式？",
+                "options": [
+                    "軟體即服務（Software as a Service, SaaS）",
+                    "平台即服務（Platform as a Service, PaaS）",
+                    "知識即服務（Knowledge as a Service, KaaS）",
+                    "基礎架構即服務（Infrastructure as a Service, IaaS）"
+                ],
+                "answerIndex": 2,
+                "explanation": "根據美國國家標準暨技術研究院（NIST）的定義，雲端運算的三大基本服務模式為：IaaS (提供底層硬體資源)、PaaS (提供開發運行環境) 與 SaaS (提供完整軟體應用)。KaaS 並非官方定義的標準模式。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "某用戶需要1TB的雲端儲存空間...服務提供商可能從單一的實體硬碟，或是串接而成的陣列系統...使用者並不需要知道資源實際的所在位置...請問上述符合何種雲端服務的關鍵特徵？",
+                "options": [
+                    "按照需求自行調配",
+                    "廣泛的網路存取方式",
+                    "虛擬化的資源池",
+                    "資源共享的技術問題"
+                ],
+                "answerIndex": 2,
+                "explanation": "雲端運算的核心優勢在於將底層無數台的實體伺服器與硬碟，透過虛擬化技術打造成一個巨大的「資源池（Resource Pooling）」。使用者只要下指令，資源池就會自動切出一塊空間供其使用，完全屏蔽了底層硬體的物理限制。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "使用雲端架設的HTTP服務時，若伺服器無法找到相對應的檔案，會回覆下列何種代碼？",
+                "options": [
+                    "404",
+                    "200",
+                    "500",
+                    "304"
+                ],
+                "answerIndex": 0,
+                "explanation": "HTTP 狀態碼中，4XX 系列代表客戶端錯誤，最經典的就是 404 Not Found（找不到資源）。另外，200 代表成功（OK），500 代表伺服器內部錯誤，304 代表資源未被修改可直接使用快取。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "為確保手機安全性及方便管理，許多公司使用MDM的軟體或平台，用來限制手機功能或提供遠端資料抺除能力，請問MDM的全名為下列何者？",
+                "options": [
+                    "Mobile Data Management",
+                    "Mobile Device Motion",
+                    "Mobile Design and Manufacturing",
+                    "Mobile Device Management"
+                ],
+                "answerIndex": 3,
+                "explanation": "MDM（行動裝置管理，Mobile Device Management）是企業用來集中控管員工智慧型設備的資安利器，可遠端派發安全政策（如強制密碼複雜度、禁用相機）或在設備遺失時下達抹除指令以防機密外洩。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "關於使用行動裝置的行為，下列敘述何者較「不」恰當？",
+                "options": [
+                    "下載應用程式只選擇可信任的來源，如：Apple Store、Google Play",
+                    "使用免費的公共無線網路服務，可確保行動裝置不會被駭",
+                    "當收到訊息中含有連結網址時，仍要提防是否有危險性",
+                    "在行動裝置中要安裝防毒軟體並定期的去更新"
+                ],
+                "answerIndex": 1,
+                "explanation": "天下沒有白吃的午餐！免費的公共 Wi-Fi（如咖啡廳、機場）往往缺乏加密機制，有時甚至是駭客偽造的「惡意熱點（Rogue AP）」。一旦連線，不僅無法確保安全，反而極易遭受中間人攻擊（MITM）。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "關於行動裝置上運用代碼技術（Tokenization）行動支付方式的安全，下列敘述何者正確？",
+                "options": [
+                    "運用手機本身的Secure Element儲存Tokenization 是不安全的",
+                    "信用卡號會儲存在手機本身，故手機遺失時相當危險",
+                    "自行破解並取得手機所有權限來管理最安全",
+                    "代碼就算被取得也無法知道使用者原本的卡號"
+                ],
+                "answerIndex": 3,
+                "explanation": "Apple Pay 等行動支付使用的「代碼化（Tokenization）」技術，是將真實信用卡號替換成一組隨機且無意義的代碼來進行交易。該代碼是不可逆的，即使駭客在中途攔截了代碼，也絕對無法反推還原出真實卡號。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "在物聯網裡，駭客可能會竊走設備間傳輸的資料，竄改之後再傳送給另外一方，這是屬於下列何種攻擊手法？",
+                "options": [
+                    "密碼攻擊（Password-Based Attack）",
+                    "金鑰淪陷攻擊（Compromised-Key Attack）",
+                    "阻斷服務攻擊（Denial-of-Service Attack）",
+                    "中間人攻擊（Man-in-the-Middle Attack）"
+                ],
+                "answerIndex": 3,
+                "explanation": "駭客悄悄潛伏在通訊雙方之間，攔截、竊聽甚至竄改傳輸的資料，而通訊的雙方卻毫無察覺，誤以為彼此正安全地連線中，這就是經典的「中間人攻擊（MITM）」。"
+            },
+            {
+                "source": "108年度 - 資訊安全技術概論",
+                "question": "下列何種機制對於增加物聯網安全「沒有」幫助？",
+                "options": [
+                    "啟用設備的安全功能",
+                    "定期檢查設備系統更新",
+                    "啟用多種連線方式",
+                    "使用足夠安全的密碼"
+                ],
+                "answerIndex": 2,
+                "explanation": "在資安領域有一句名言：「系統開的門越多，駭客能走的漏洞就越多」。啟用多種不必要的連線方式會無謂地擴大「受攻擊面（Attack Surface）」。正確的做法是關閉所有非必要的服務與連接埠以降低風險。"
             }
         ];
 
@@ -207,21 +772,21 @@
 
         // --- 初始化與本機儲存 (LocalStorage) ---
         function initApp() {
-            const savedState = localStorage.getItem('secExamState');
-            if (savedState) {
-                appState = JSON.parse(savedState);
-                // 確保如果有舊資料但題庫為空，恢復預設
-                if(appState.questions.length === 0) appState.questions = [...defaultQuestions];
-            } else {
-                appState.questions = [...defaultQuestions];
+            // 強制載入最新的 defaultQuestions 內容
+            appState.questions = [...defaultQuestions];
+            
+            const savedStats = localStorage.getItem('secExamStats');
+            if (savedStats) {
+                appState.stats = JSON.parse(savedStats);
             }
-            saveState();
+            
             updateStatsUI();
             switchTab('practice');
         }
 
         function saveState() {
-            localStorage.setItem('secExamState', JSON.stringify(appState));
+            // 只儲存統計數據，不儲存題庫，這樣更新 HTML 的 defaultQuestions 時才會生效
+            localStorage.setItem('secExamStats', JSON.stringify(appState.stats));
             updateStatsUI();
         }
 
