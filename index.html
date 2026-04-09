@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>資安工程師 歷屆試題特訓系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -11,7 +11,10 @@
         body { font-family: 'Noto Sans TC', sans-serif; background-color: #f3f4f6; }
         .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
         .option-btn { transition: all 0.2s ease-in-out; }
-        .option-btn:hover:not(:disabled) { transform: translateX(5px); border-color: #3b82f6; background-color: #eff6ff; }
+        @media (min-width: 768px) {
+            .option-btn:hover:not(:disabled) { transform: translateX(5px); border-color: #3b82f6; background-color: #eff6ff; }
+        }
+        .option-btn:active:not(:disabled) { border-color: #3b82f6; background-color: #eff6ff; }
         .option-btn:disabled { cursor: not-allowed; }
         .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
         @keyframes shake {
@@ -30,81 +33,81 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="text-gray-800 h-screen flex flex-col relative">
+<body class="text-gray-800 h-screen flex flex-col relative overflow-hidden">
 
     <!-- 頂部導航 -->
     <nav class="bg-slate-800 text-white shadow-lg shrink-0">
-        <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <i class="fa-solid fa-shield-halved text-blue-400 text-2xl"></i>
-                <h1 class="font-bold text-xl tracking-wider">資安特訓中心</h1>
+        <div class="max-w-5xl mx-auto px-4 py-3 flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div class="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-start">
+                <i class="fa-solid fa-shield-halved text-blue-400 text-xl md:text-2xl"></i>
+                <h1 class="font-bold text-lg md:text-xl tracking-wider whitespace-nowrap">資安特訓中心</h1>
             </div>
-            <div class="flex gap-2">
-                <button onclick="switchTab('practice')" id="tab-practice" class="px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-500 transition font-medium">
-                    <i class="fa-solid fa-gamepad mr-1"></i> 實戰演練
+            <div class="flex gap-2 w-full sm:w-auto">
+                <button onclick="switchTab('practice')" id="tab-practice" class="flex-1 sm:flex-none justify-center px-3 py-2 md:px-4 md:py-2 rounded-md bg-blue-600 hover:bg-blue-500 transition font-medium text-sm md:text-base flex items-center gap-1">
+                    <i class="fa-solid fa-gamepad"></i> 實戰演練
                 </button>
-                <button onclick="switchTab('manage')" id="tab-manage" class="px-4 py-2 rounded-md bg-slate-700 hover:bg-slate-600 transition font-medium">
-                    <i class="fa-solid fa-database mr-1"></i> 題庫管理
+                <button onclick="switchTab('manage')" id="tab-manage" class="flex-1 sm:flex-none justify-center px-3 py-2 md:px-4 md:py-2 rounded-md bg-slate-700 hover:bg-slate-600 transition font-medium text-sm md:text-base flex items-center gap-1">
+                    <i class="fa-solid fa-database"></i> 題庫管理
                 </button>
             </div>
         </div>
     </nav>
 
     <!-- 主內容區 -->
-    <main class="flex-grow overflow-auto p-4 md:p-8 flex justify-center items-start">
+    <main class="flex-grow overflow-auto p-3 md:p-8 flex justify-center items-start">
         
         <!-- 區塊 1：實戰演練 -->
         <section id="practice-section" class="w-full max-w-3xl hidden">
             <!-- 狀態列 -->
-            <div class="grid grid-cols-3 gap-4 mb-6">
-                <div class="glass-panel rounded-xl p-4 shadow-sm text-center">
-                    <div class="text-sm text-gray-500 mb-1">總題庫數</div>
-                    <div class="text-2xl font-bold text-slate-700" id="stat-total">0</div>
+            <div class="grid grid-cols-3 gap-2 md:gap-4 mb-4 md:mb-6">
+                <div class="glass-panel rounded-xl p-3 md:p-4 shadow-sm text-center">
+                    <div class="text-xs md:text-sm text-gray-500 mb-1">總題庫數</div>
+                    <div class="text-xl md:text-2xl font-bold text-slate-700" id="stat-total">0</div>
                 </div>
-                <div class="glass-panel rounded-xl p-4 shadow-sm text-center">
-                    <div class="text-sm text-gray-500 mb-1">答對率</div>
-                    <div class="text-2xl font-bold text-blue-600" id="stat-accuracy">0%</div>
+                <div class="glass-panel rounded-xl p-3 md:p-4 shadow-sm text-center">
+                    <div class="text-xs md:text-sm text-gray-500 mb-1">答對率</div>
+                    <div class="text-xl md:text-2xl font-bold text-blue-600" id="stat-accuracy">0%</div>
                 </div>
-                <div class="glass-panel rounded-xl p-4 shadow-sm text-center relative overflow-hidden">
-                    <div class="absolute -right-2 -bottom-2 opacity-10 text-orange-500 text-5xl"><i class="fa-solid fa-fire"></i></div>
-                    <div class="text-sm text-gray-500 mb-1">目前連勝</div>
-                    <div class="text-2xl font-bold text-orange-500" id="stat-streak">0</div>
+                <div class="glass-panel rounded-xl p-3 md:p-4 shadow-sm text-center relative overflow-hidden">
+                    <div class="absolute -right-2 -bottom-2 opacity-10 text-orange-500 text-4xl md:text-5xl"><i class="fa-solid fa-fire"></i></div>
+                    <div class="text-xs md:text-sm text-gray-500 mb-1">目前連勝</div>
+                    <div class="text-xl md:text-2xl font-bold text-orange-500" id="stat-streak">0</div>
                 </div>
             </div>
 
             <!-- 考題區 -->
-            <div class="glass-panel rounded-2xl shadow-lg p-6 md:p-8 relative">
+            <div class="glass-panel rounded-2xl shadow-lg p-4 md:p-8 relative">
                 <!-- 標籤 -->
-                <div class="inline-flex items-center gap-2 px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-semibold mb-4">
+                <div class="inline-flex items-center gap-2 px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs md:text-sm font-semibold mb-3 md:mb-4">
                     <i class="fa-regular fa-calendar-check"></i>
                     <span id="q-source">來源載入中...</span>
                 </div>
 
                 <!-- 題目 -->
-                <h2 class="text-xl md:text-2xl font-bold mb-4 leading-relaxed text-slate-800" id="q-text">
+                <h2 class="text-lg md:text-2xl font-bold mb-4 leading-relaxed text-slate-800" id="q-text">
                     準備好迎接挑戰了嗎？
                 </h2>
                 
                 <!-- 題目圖片區塊 -->
-                <div id="q-image-container" class="hidden mb-6 flex justify-center">
+                <div id="q-image-container" class="hidden mb-4 md:mb-6 flex justify-center">
                     <!-- 動態載入圖片 -->
                 </div>
 
                 <!-- 選項 -->
-                <div class="flex flex-col gap-3" id="q-options">
+                <div class="flex flex-col gap-2 md:gap-3" id="q-options">
                     <!-- 動態產生 -->
                 </div>
 
                 <!-- 解答回饋區 -->
-                <div id="feedback-area" class="hidden mt-6 p-5 rounded-xl pop-in">
-                    <div class="flex items-center gap-3 mb-2">
-                        <div id="feedback-icon" class="text-2xl"></div>
-                        <h3 id="feedback-title" class="text-lg font-bold"></h3>
+                <div id="feedback-area" class="hidden mt-4 md:mt-6 p-4 md:p-5 rounded-xl pop-in">
+                    <div class="flex items-center gap-2 md:gap-3 mb-2">
+                        <div id="feedback-icon" class="text-xl md:text-2xl"></div>
+                        <h3 id="feedback-title" class="text-base md:text-lg font-bold"></h3>
                     </div>
-                    <p id="feedback-explanation" class="text-gray-700 leading-relaxed mt-2"></p>
+                    <p id="feedback-explanation" class="text-sm md:text-base text-gray-700 leading-relaxed mt-2"></p>
                     
-                    <div class="mt-6 text-right">
-                        <button onclick="loadRandomQuestion()" class="bg-slate-800 hover:bg-slate-700 text-white px-6 py-2 rounded-lg font-medium shadow-md transition transform hover:scale-105">
+                    <div class="mt-5 md:mt-6 text-right">
+                        <button onclick="loadRandomQuestion()" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-white px-6 py-3 md:py-2 rounded-lg font-medium shadow-md transition transform hover:scale-105 active:scale-95">
                             下一題 <i class="fa-solid fa-arrow-right ml-1"></i>
                         </button>
                     </div>
@@ -114,47 +117,47 @@
 
         <!-- 區塊 2：題庫管理 -->
         <section id="manage-section" class="w-full max-w-3xl hidden">
-            <div class="glass-panel rounded-2xl shadow-lg p-6 md:p-8">
-                <h2 class="text-2xl font-bold mb-2 text-slate-800">題庫管理系統</h2>
-                <p class="text-gray-500 mb-6">目前的題庫皆儲存在您的瀏覽器本機中。您可以自由手動新增、編輯、刪除單一題目，或批次匯入/匯出。</p>
+            <div class="glass-panel rounded-2xl shadow-lg p-4 md:p-8">
+                <h2 class="text-xl md:text-2xl font-bold mb-2 text-slate-800">題庫管理系統</h2>
+                <p class="text-xs md:text-sm text-gray-500 mb-4 md:mb-6">目前的題庫皆儲存在您的設備本機中。您可以自由手動新增、編輯、刪除單一題目，或批次匯入/匯出。</p>
 
-                <div class="grid md:grid-cols-2 gap-6">
+                <div class="grid md:grid-cols-2 gap-4 md:gap-6">
                     <!-- 匯入區 -->
-                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-blue-500 transition group bg-white">
-                        <i class="fa-solid fa-cloud-arrow-up text-4xl text-gray-400 group-hover:text-blue-500 mb-3"></i>
-                        <h3 class="font-bold text-lg mb-1">批次匯入題庫</h3>
-                        <p class="text-sm text-gray-500 mb-4">支援 JSON 格式檔案</p>
+                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-4 md:p-6 text-center hover:border-blue-500 transition group bg-white flex flex-col items-center justify-center">
+                        <i class="fa-solid fa-cloud-arrow-up text-3xl md:text-4xl text-gray-400 group-hover:text-blue-500 mb-2 md:mb-3 transition"></i>
+                        <h3 class="font-bold text-base md:text-lg mb-1">批次匯入題庫</h3>
+                        <p class="text-xs md:text-sm text-gray-500 mb-3 md:mb-4">支援 JSON 格式檔案</p>
                         
                         <input type="file" id="file-upload" accept=".json" class="hidden" onchange="handleFileUpload(event)">
-                        <label for="file-upload" class="cursor-pointer bg-blue-50 text-blue-600 px-4 py-2 rounded-md font-medium hover:bg-blue-100 transition inline-block">
+                        <label for="file-upload" class="cursor-pointer bg-blue-50 text-blue-600 px-4 py-2.5 rounded-md font-medium hover:bg-blue-100 transition inline-block w-full sm:w-auto text-sm md:text-base">
                             選擇檔案
                         </label>
                     </div>
 
                     <!-- 下載與重置區 -->
-                    <div class="flex flex-col gap-3 justify-center">
-                        <button onclick="showAddModal(-1)" class="flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-3 rounded-xl hover:bg-blue-500 transition shadow-md font-bold">
+                    <div class="flex flex-col gap-2 md:gap-3 justify-center">
+                        <button onclick="showAddModal(-1)" class="flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-3 md:py-3 rounded-xl hover:bg-blue-500 transition shadow-md font-bold text-sm md:text-base">
                             <i class="fa-solid fa-plus"></i> 手動新增單筆考題
                         </button>
-                        <button onclick="downloadCurrentBank()" class="flex items-center justify-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-50 transition shadow-sm font-medium">
-                            <i class="fa-solid fa-file-export text-gray-500"></i> 匯出目前所有題庫 (備份)
+                        <button onclick="downloadCurrentBank()" class="flex items-center justify-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2.5 rounded-xl hover:bg-gray-50 transition shadow-sm font-medium text-sm md:text-base">
+                            <i class="fa-solid fa-file-export text-gray-500"></i> 匯出題庫 (備份)
                         </button>
-                        <button onclick="downloadTemplate()" class="flex items-center justify-center gap-2 bg-white border border-gray-300 text-gray-500 px-4 py-2 rounded-xl hover:bg-gray-50 transition shadow-sm font-medium text-sm">
+                        <button onclick="downloadTemplate()" class="flex items-center justify-center gap-2 bg-white border border-gray-300 text-gray-500 px-4 py-2.5 rounded-xl hover:bg-gray-50 transition shadow-sm font-medium text-xs md:text-sm">
                             <i class="fa-solid fa-download text-gray-400"></i> 下載上傳範本
                         </button>
-                        <button onclick="resetBank()" class="flex items-center justify-center gap-2 bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-xl hover:bg-red-100 transition shadow-sm font-medium text-sm mt-2">
-                            <i class="fa-solid fa-rotate-right"></i> 恢復系統預設題庫
+                        <button onclick="resetBank()" class="flex items-center justify-center gap-2 bg-red-50 text-red-600 border border-red-200 px-4 py-2.5 rounded-xl hover:bg-red-100 transition shadow-sm font-medium text-xs md:text-sm mt-1 md:mt-2">
+                            <i class="fa-solid fa-rotate-right"></i> 恢復原廠預設題庫
                         </button>
                     </div>
                 </div>
 
                 <!-- 題庫列表預覽 -->
-                <div class="mt-8">
-                    <h3 class="font-bold text-lg mb-3 border-b pb-2 flex justify-between items-center">
+                <div class="mt-6 md:mt-8">
+                    <h3 class="font-bold text-base md:text-lg mb-2 md:mb-3 border-b pb-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1">
                         <span>目前題庫總覽 (<span id="preview-count">0</span> 題)</span>
-                        <span class="text-sm font-normal text-gray-400">最新新增的題目會顯示在最上方</span>
+                        <span class="text-xs font-normal text-gray-400">最新新增的題目會顯示在最上方</span>
                     </h3>
-                    <div id="bank-preview" class="max-h-96 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
+                    <div id="bank-preview" class="max-h-80 md:max-h-96 overflow-y-auto space-y-2 md:space-y-3 pr-1 md:pr-2 custom-scrollbar">
                         <!-- 動態產生 -->
                     </div>
                 </div>
@@ -164,62 +167,62 @@
     </main>
 
     <!-- 新增/編輯 題目 Modal 表單 -->
-    <div id="add-modal" class="fixed inset-0 bg-black/60 hidden justify-center items-center z-50 p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[95vh] flex flex-col pop-in">
-            <div class="p-5 border-b flex justify-between items-center bg-slate-50 rounded-t-2xl">
-                <h3 id="modal-title" class="text-xl font-bold text-slate-800"><i class="fa-solid fa-plus text-blue-500 mr-2"></i>手動新增考題</h3>
-                <button onclick="closeAddModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+    <div id="add-modal" class="fixed inset-0 bg-black/60 hidden justify-center items-center z-50 p-2 md:p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[95vh] flex flex-col pop-in mx-auto">
+            <div class="p-4 md:p-5 border-b flex justify-between items-center bg-slate-50 rounded-t-2xl">
+                <h3 id="modal-title" class="text-lg md:text-xl font-bold text-slate-800"><i class="fa-solid fa-plus text-blue-500 mr-2"></i>手動新增考題</h3>
+                <button onclick="closeAddModal()" class="text-gray-400 hover:text-gray-600 text-3xl md:text-2xl leading-none p-1">&times;</button>
             </div>
-            <div class="p-5 overflow-y-auto flex-grow custom-scrollbar">
-                <form id="add-q-form" class="space-y-5">
+            <div class="p-4 md:p-5 overflow-y-auto flex-grow custom-scrollbar">
+                <form id="add-q-form" class="space-y-4 md:space-y-5">
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">來源 / 標籤</label>
-                        <input type="text" id="new-q-source" required class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="例如：109年度 - 資訊安全管理概論">
+                        <input type="text" id="new-q-source" required class="w-full border border-gray-300 rounded-lg px-4 py-3 md:py-2.5 focus:ring-2 focus:ring-blue-500 outline-none text-sm md:text-base" placeholder="例如：109年度 - 資訊安全管理概論">
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">題目內容</label>
-                        <textarea id="new-q-text" required rows="3" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="請輸入完整題目..."></textarea>
+                        <textarea id="new-q-text" required rows="3" class="w-full border border-gray-300 rounded-lg px-4 py-3 md:py-2.5 focus:ring-2 focus:ring-blue-500 outline-none text-sm md:text-base" placeholder="請輸入完整題目..."></textarea>
                     </div>
                     
                     <!-- 新增附圖區塊 -->
-                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <div class="bg-slate-50 p-3 md:p-4 rounded-xl border border-slate-200">
                         <label class="block text-sm font-bold text-gray-700 mb-2"><i class="fa-regular fa-image mr-1 text-slate-500"></i>題目附圖 (選填)</label>
-                        <div class="flex items-center gap-3">
+                        <div class="flex flex-wrap items-center gap-2 md:gap-3">
                             <input type="file" id="new-q-image" accept="image/png, image/jpeg, image/gif, image/webp" class="hidden" onchange="handleImageUpload(event)">
-                            <label for="new-q-image" class="cursor-pointer bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition shadow-sm">
+                            <label for="new-q-image" class="cursor-pointer bg-white border border-gray-300 text-gray-700 px-4 py-2.5 md:py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition shadow-sm w-full sm:w-auto text-center">
                                 選擇圖片
                             </label>
-                            <button type="button" id="clear-image-btn" onclick="clearUploadedImage()" class="hidden text-red-500 hover:text-red-700 text-sm font-medium px-2 py-1">
+                            <button type="button" id="clear-image-btn" onclick="clearUploadedImage()" class="hidden w-full sm:w-auto text-red-500 hover:text-red-700 bg-red-50 sm:bg-transparent text-sm font-medium px-4 py-2.5 md:py-1 rounded-lg sm:rounded-none">
                                 <i class="fa-solid fa-trash-can mr-1"></i>移除圖片
                             </button>
                         </div>
                         <div id="image-preview-container" class="mt-3 hidden">
-                            <img id="preview-img" src="" class="max-h-48 max-w-full rounded-lg border border-gray-300 shadow-sm object-contain bg-white">
+                            <img id="preview-img" src="" class="max-h-40 md:max-h-48 max-w-full rounded-lg border border-gray-300 shadow-sm object-contain bg-white">
                         </div>
                         <p class="text-xs text-gray-400 mt-2">提示：系統會自動壓縮圖片大小以節省儲存空間。</p>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 bg-gray-50 p-3 md:p-4 rounded-xl border border-gray-100">
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-1">選項 A</label>
-                            <input type="text" id="new-q-optA" required class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                            <input type="text" id="new-q-optA" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 md:py-2 text-sm md:text-base">
                         </div>
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-1">選項 B</label>
-                            <input type="text" id="new-q-optB" required class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                            <input type="text" id="new-q-optB" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 md:py-2 text-sm md:text-base">
                         </div>
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-1">選項 C</label>
-                            <input type="text" id="new-q-optC" required class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                            <input type="text" id="new-q-optC" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 md:py-2 text-sm md:text-base">
                         </div>
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-1">選項 D</label>
-                            <input type="text" id="new-q-optD" required class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                            <input type="text" id="new-q-optD" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 md:py-2 text-sm md:text-base">
                         </div>
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">正確解答</label>
-                        <select id="new-q-ans" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none bg-white font-bold text-blue-700">
+                        <select id="new-q-ans" class="w-full border border-gray-300 rounded-lg px-4 py-3 md:py-2.5 focus:ring-2 focus:ring-blue-500 outline-none bg-white font-bold text-blue-700 text-sm md:text-base">
                             <option value="0">選項 A 為正確解答</option>
                             <option value="1">選項 B 為正確解答</option>
                             <option value="2">選項 C 為正確解答</option>
@@ -228,19 +231,19 @@
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">專業解析 (選填)</label>
-                        <textarea id="new-q-exp" rows="2" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="請輸入答案的解釋或觀念補充..."></textarea>
+                        <textarea id="new-q-exp" rows="2" class="w-full border border-gray-300 rounded-lg px-4 py-3 md:py-2.5 focus:ring-2 focus:ring-blue-500 outline-none text-sm md:text-base" placeholder="請輸入答案的解釋或觀念補充..."></textarea>
                     </div>
                 </form>
             </div>
-            <div class="p-4 border-t bg-white flex justify-end gap-3 rounded-b-2xl">
-                <button onclick="closeAddModal()" class="px-6 py-2 rounded-lg font-bold text-gray-600 bg-white border hover:bg-gray-50 transition">取消</button>
-                <button id="modal-submit-btn" onclick="saveNewQuestion()" class="px-6 py-2 rounded-lg font-bold text-white bg-blue-600 hover:bg-blue-700 transition shadow-md">儲存並新增</button>
+            <div class="p-4 border-t bg-white flex flex-col-reverse sm:flex-row justify-end gap-3 rounded-b-2xl shrink-0">
+                <button onclick="closeAddModal()" class="w-full sm:w-auto px-6 py-3 md:py-2 rounded-lg font-bold text-gray-600 bg-white border hover:bg-gray-50 transition active:bg-gray-100">取消</button>
+                <button id="modal-submit-btn" onclick="saveNewQuestion()" class="w-full sm:w-auto px-6 py-3 md:py-2 rounded-lg font-bold text-white bg-blue-600 hover:bg-blue-700 transition shadow-md active:bg-blue-800">儲存並新增</button>
             </div>
         </div>
     </div>
 
     <!-- 吐司提示訊息 (Toast) -->
-    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-xl z-50 flex items-center gap-3">
+    <div id="toast" class="fixed bottom-5 left-4 right-4 md:left-auto md:right-5 md:w-auto transform translate-y-20 opacity-0 transition-all duration-300 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-xl z-50 flex items-center justify-center md:justify-start gap-3">
         <i class="fa-solid fa-circle-info text-blue-400"></i>
         <span id="toast-msg">訊息</span>
     </div>
@@ -966,7 +969,7 @@
 
             // 渲染圖片 (如果有)
             if (currentQuestion.image) {
-                imageContainer.innerHTML = `<img src="${currentQuestion.image}" class="max-h-72 w-full object-contain rounded-lg border border-gray-200 shadow-sm">`;
+                imageContainer.innerHTML = `<img src="${currentQuestion.image}" class="max-h-56 md:max-h-72 w-full object-contain rounded-lg border border-gray-200 shadow-sm">`;
                 imageContainer.classList.remove('hidden');
             } else {
                 imageContainer.innerHTML = '';
@@ -975,8 +978,8 @@
 
             currentQuestion.options.forEach((opt, index) => {
                 const btn = document.createElement('button');
-                btn.className = 'option-btn w-full text-left bg-white border-2 border-gray-200 p-4 rounded-xl font-medium text-gray-700';
-                btn.innerHTML = `<span class="inline-block w-8 text-gray-400 font-bold">${String.fromCharCode(65 + index)}.</span> ${opt}`;
+                btn.className = 'option-btn w-full text-left bg-white border-2 border-gray-200 p-3 md:p-4 rounded-xl font-medium text-gray-700 text-sm md:text-base';
+                btn.innerHTML = `<span class="inline-block w-6 md:w-8 text-gray-400 font-bold">${String.fromCharCode(65 + index)}.</span> ${opt}`;
                 btn.onclick = () => checkAnswer(index, btn);
                 optionsContainer.appendChild(btn);
             });
@@ -1002,10 +1005,10 @@
                 clickedBtn.classList.replace('bg-white', 'bg-green-50');
                 clickedBtn.classList.add('text-green-700');
 
-                feedbackArea.className = 'mt-6 p-5 rounded-xl pop-in bg-green-50 border border-green-200 block';
+                feedbackArea.className = 'mt-4 md:mt-6 p-4 md:p-5 rounded-xl pop-in bg-green-50 border border-green-200 block';
                 feedbackIcon.innerHTML = '<i class="fa-solid fa-circle-check text-green-500"></i>';
                 feedbackTitle.innerText = '防禦成功！答對了';
-                feedbackTitle.className = 'text-lg font-bold text-green-700';
+                feedbackTitle.className = 'text-base md:text-lg font-bold text-green-700';
                 
             } else {
                 appState.stats.streak = 0; // 斷連勝
@@ -1019,10 +1022,10 @@
                 correctBtn.classList.replace('border-gray-200', 'border-green-500');
                 correctBtn.classList.add('border-2');
 
-                feedbackArea.className = 'mt-6 p-5 rounded-xl pop-in bg-red-50 border border-red-200 block';
+                feedbackArea.className = 'mt-4 md:mt-6 p-4 md:p-5 rounded-xl pop-in bg-red-50 border border-red-200 block';
                 feedbackIcon.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-red-500"></i>';
                 feedbackTitle.innerText = '系統遭駭！答錯了';
-                feedbackTitle.className = 'text-lg font-bold text-red-700';
+                feedbackTitle.className = 'text-base md:text-lg font-bold text-red-700';
             }
 
             feedbackExp.innerHTML = `<strong>解析：</strong>${currentQuestion.explanation || "本題無提供解析。"}`;
@@ -1261,24 +1264,26 @@
             document.getElementById('preview-count').innerText = appState.questions.length;
             container.innerHTML = '';
 
-            // 渲染所有題目供管理 (若資料過多可考慮分頁，但目前設計為全部列出方便刪除與編輯)
+            // 渲染所有題目供管理 
             appState.questions.forEach((q, idx) => {
-                const hasImage = q.image ? '<span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800"><i class="fa-regular fa-image mr-1"></i>附圖</span>' : '';
+                const hasImage = q.image ? '<span class="ml-1 md:ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] md:text-xs font-medium bg-purple-100 text-purple-800"><i class="fa-regular fa-image mr-1"></i>附圖</span>' : '';
                 
                 const div = document.createElement('div');
-                div.className = 'bg-white border border-gray-200 p-3 rounded-lg text-sm flex gap-3 items-start hover:border-blue-300 transition group';
+                div.className = 'bg-white border border-gray-200 p-3 rounded-lg flex flex-col md:flex-row gap-3 md:items-start hover:border-blue-300 transition group shadow-sm';
                 div.innerHTML = `
-                    <div class="bg-slate-100 text-slate-500 px-2 py-1 rounded text-xs font-bold shrink-0 mt-1">#${idx+1}</div>
-                    <div class="flex-grow">
-                        <div class="text-xs text-blue-500 font-semibold mb-1">${q.source || "自訂題目"} ${hasImage}</div>
-                        <div class="text-gray-700">${q.question}</div>
+                    <div class="flex gap-2 md:gap-3 items-start w-full">
+                        <div class="bg-slate-100 text-slate-500 px-2 py-1 rounded text-xs font-bold shrink-0 mt-1">#${idx+1}</div>
+                        <div class="flex-grow">
+                            <div class="text-xs text-blue-500 font-semibold mb-1">${q.source || "自訂題目"} ${hasImage}</div>
+                            <div class="text-gray-700 text-sm md:text-base line-clamp-3 md:line-clamp-none">${q.question}</div>
+                        </div>
                     </div>
-                    <div class="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition">
-                        <button onclick="showAddModal(${idx})" class="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-2 rounded-md transition" title="編輯此題">
-                            <i class="fa-solid fa-pen"></i>
+                    <div class="flex gap-2 shrink-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 focus-within:opacity-100 transition w-full md:w-auto justify-end border-t md:border-t-0 pt-2 md:pt-0 mt-1 md:mt-0">
+                        <button onclick="showAddModal(${idx})" class="text-blue-500 hover:text-blue-700 bg-blue-50 md:bg-transparent md:hover:bg-blue-50 px-3 py-2 md:p-2 rounded-md transition flex items-center gap-1 active:bg-blue-100" title="編輯此題">
+                            <i class="fa-solid fa-pen"></i> <span class="md:hidden text-xs font-bold">編輯</span>
                         </button>
-                        <button onclick="deleteQuestion(${idx})" class="text-red-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-md transition" title="刪除此題">
-                            <i class="fa-solid fa-trash-can text-lg"></i>
+                        <button onclick="deleteQuestion(${idx})" class="text-red-400 hover:text-red-600 bg-red-50 md:bg-transparent md:hover:bg-red-50 px-3 py-2 md:p-2 rounded-md transition flex items-center gap-1 active:bg-red-100" title="刪除此題">
+                            <i class="fa-solid fa-trash-can text-lg"></i> <span class="md:hidden text-xs font-bold">刪除</span>
                         </button>
                     </div>
                 `;
